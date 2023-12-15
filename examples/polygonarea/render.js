@@ -15,7 +15,7 @@ let g = {
 
 let points = [];
 
-let pxdiv = 10;
+let pxdiv = 100;
 
 let text_area = null;
 
@@ -61,7 +61,7 @@ setLines(pxdiv);
 
 //Add the graphics components to the app.
 app.stage.addChild(mesh);
-app.stage.addChild(axis);
+//app.stage.addChild(axis);
 app.stage.addChild(lines);
 app.stage.addChild(intro_message);
 
@@ -150,6 +150,16 @@ app.stage.addEventListener('pointertap', (e) =>{
     
     //finds the exact area inside the polygon using shoelace algorithm
     if(clear_mode == 0){
+        var mesh = getMeshGrid(points, pxdiv);
+
+        const somethinggraph = new PIXI.Graphics();
+        somethinggraph.beginFill(colors['red']);
+        for (var i = 0; i < mesh.length; i++){
+            somethinggraph.drawCircle(mesh[i][0], mesh[i][1], 5);
+        }   
+        somethinggraph.endFill();
+        app.stage.addChild(somethinggraph);
+
         text_area = new PIXI.Text(`Area is: ${(findExactArea()/pxdiv/pxdiv).toFixed(3)} squares`, {
             fontFamily: 'Arial',
             fontSize: 24,

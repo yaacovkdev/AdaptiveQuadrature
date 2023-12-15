@@ -28,7 +28,19 @@ function getMeshGrid(points, div){
         if(x2 < points[i][0]) x2 = points[i][0];
         if(y2 < points[i][1]) y2 = points[i][1]; 
     }
-
+    console.log(x1/div,y1/div,x2/div,y2/div);
+    var starting_pos = new BigNumber(div).dividedBy(2);
+    x1 = new BigNumber(x1).dividedBy(div).integerValue(BigNumber.ROUND_FLOOR).multipliedBy(div).plus(starting_pos).toNumber();
+    y1 = new BigNumber(y1).dividedBy(div).integerValue(BigNumber.ROUND_FLOOR).multipliedBy(div).plus(starting_pos).toNumber();
+    x2 = new BigNumber(x2).dividedBy(div).integerValue(BigNumber.ROUND_FLOOR).multipliedBy(div).plus(starting_pos).toNumber();
+    y2 = new BigNumber(y2).dividedBy(div).integerValue(BigNumber.ROUND_FLOOR).multipliedBy(div).plus(starting_pos).toNumber();
+    console.log(x1/div,y1/div,x2/div,y2/div);
+    for(var i = x1; i <= x2; i += div){
+        for(var j = y1; j <= y2; j += div){
+            mesh.push([i,j]);
+        }
+    }
+    return mesh;
     //do some math here to return an array of tuples where you have all the grid points that the polygon lays on.
     
 }
