@@ -15,6 +15,8 @@ let g = {
 
 let points = [];
 
+let pxdiv = 10;
+
 let text_area = null;
 
 function toCanvas(x,y){
@@ -55,7 +57,10 @@ const intro_message = new PIXI.Text(DISPLAY_MESSAGE, {
 
 intro_message.position.set(WIDTH *1/10,HEIGHT * 9/10);
 
+setLines(pxdiv);
+
 //Add the graphics components to the app.
+app.stage.addChild(mesh);
 app.stage.addChild(axis);
 app.stage.addChild(lines);
 app.stage.addChild(intro_message);
@@ -77,17 +82,17 @@ function shapeReset(){
     clear_mode = 0;
 }
 
-//finds area of the points.
-function findArea(){
+//finds area of the points, .
+function findExactArea(){
     n = points.length;
-    var Total = 0;
+    var Total = new BigNumber(0);
     for(var i = 0; i < n-1; i++){
         //shoelace formula. 
-        Total += (points[i][0]*points[i+1][1] - points[i+1][0]*points[i][1]);
+        Total = Total.plus((BigNumber(points[i][0]).multipliedBy(BigNumber(points[i+1][1]))).minus(BigNumber(points[i+1][0]).multipliedBy(BigNumber(points[i][1]))));
     }
 
-    Total /= 2;
-    return Math.abs(Total);
+    Total = Total.dividedBy(2);
+    return Total.absoluteValue();
 }
 
 //Enable interactivity!
@@ -143,8 +148,9 @@ app.stage.addEventListener('pointertap', (e) =>{
     points.push([g.x,g.y]);
     lines.lineTo(g.x, g.y);
     
+    //finds the exact area inside the polygon using shoelace algorithm
     if(clear_mode == 0){
-        text_area = new PIXI.Text(`Area is: ${findArea()} px`, {
+        text_area = new PIXI.Text(`Area is: ${(findExactArea()/pxdiv/pxdiv).toFixed(3)} squares`, {
             fontFamily: 'Arial',
             fontSize: 24,
             fill: colors['light purple'],
