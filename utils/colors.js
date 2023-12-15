@@ -80,7 +80,3 @@ const colors = {
     "dark slate gray": 0x2F4F4F,
     "medium aquamarine": 0x66CDAA,
 };
-
-function toHexColor(name){
-    return colors[name];
-}
