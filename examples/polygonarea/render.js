@@ -1,4 +1,4 @@
-const WIDTH = 1000;
+const WIDTH = 2000;
 const HEIGHT = 1000;
 
 const ORIGINX = WIDTH/2;
@@ -71,7 +71,6 @@ function linesReset(){
     lines.clear();
     app.stage.removeChild(text_area);
 }
-
 
 function shapeReset(){
     circle.clear();
@@ -151,11 +150,14 @@ app.stage.addEventListener('pointertap', (e) =>{
     //finds the exact area inside the polygon using shoelace algorithm
     if(clear_mode == 0){
         var mesh = getMeshGrid(points, pxdiv);
-
+        mesh = meshCenterPointsToSquare(mesh, pxdiv);
+        var k = inpolygonSq(mesh, points,pxdiv);
+        
+        
         const somethinggraph = new PIXI.Graphics();
-        somethinggraph.beginFill(colors['red']);
-        for (var i = 0; i < mesh.length; i++){
-            somethinggraph.drawCircle(mesh[i][0], mesh[i][1], 5);
+        somethinggraph.beginFill(colors['red'],0.5);
+        for (var i = 0; i < k.length; i++){
+            somethinggraph.drawRect(k[i][0], k[i][1], pxdiv,pxdiv);
         }   
         somethinggraph.endFill();
         app.stage.addChild(somethinggraph);
