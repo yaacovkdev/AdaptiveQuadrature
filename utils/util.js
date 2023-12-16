@@ -166,16 +166,17 @@ function lineLineIntersection(A,B,C,D){
 }
 
 function inpolygonSq(mesh,points,h){
+    var sqmesh = meshCenterPointsToSquare(mesh, h);
     var k = [];
     //comparing every single point with every single line of polygon.
-    for(var i = 0; i < mesh.length; i++){
+    for(var i = 0; i < sqmesh.length; i++){
         var s1 = {
-            x: mesh[i][0][0],
-            y: mesh[i][0][1]
+            x: sqmesh[i][0][0],
+            y: sqmesh[i][0][1]
         }
         var s2 = {
-            x: mesh[i][1][0],
-            y: mesh[i][1][1]
+            x: sqmesh[i][1][0],
+            y: sqmesh[i][1][1]
         }
         var l1, l2;
         for (var j = 0; j < points.length-1; j++){

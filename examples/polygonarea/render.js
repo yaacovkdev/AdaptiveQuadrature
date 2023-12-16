@@ -15,7 +15,7 @@ let g = {
 
 let points = [];
 
-let pxdiv = 100;
+let pxdiv = 5;
 
 let text_area = null;
 
@@ -150,7 +150,6 @@ app.stage.addEventListener('pointertap', (e) =>{
     //finds the exact area inside the polygon using shoelace algorithm
     if(clear_mode == 0){
         var mesh = getMeshGrid(points, pxdiv);
-        mesh = meshCenterPointsToSquare(mesh, pxdiv);
         var k = inpolygonSq(mesh, points,pxdiv);
         
         
