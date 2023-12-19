@@ -5,8 +5,27 @@
         
     </head>
     <body id="b">
-        <div id="canvasdiv">
+        <div id="canvasdiv" style="float: left;" >
             
+        </div>
+        <div id="ResultField" style="margin-left: 40px; float: left; width: fit-content;">
+            <h1>Results:</h1>
+            
+            <p id="exactarea" style="font-size: larger; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></p>
+            
+            <p id="approxarea" style="font-size: larger; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></p>
+            
+            <p id="approxmod" style="font-size: larger; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></p>
+
+            <p id="calculatedk" style="font-size: larger; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></p>
+
+            <p id="winner" style="font-size: x-large; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"></p>
+
+            <form>
+                <label for="username">Change grid division (px):</label><br>
+                <input type="text" id="pxdivision"><br><br>
+            </form>
+            <button type="button" id="resetbutton">Reset</button> 
         </div>
         <script src="../../utils/bignumber/bignumber.js"></script>
         <script src="../../utils/util.js"></script>

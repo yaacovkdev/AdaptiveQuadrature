@@ -222,13 +222,14 @@ function inpolygonSq(mesh,points,h){
             }
 
             //prevents a bug of filled squares outside polygon
+            //moves the y value of point of line slightly lower if it's in the middle of a square.
             if(h >= 1){
                 if(l1.y/h-parseInt(l1.y/h) == 0.5){
-                    l1.y+=0.5
+                    l1.y+=0.01
                 }
 
                 if(l2.y/h-parseInt(l2.y/h) == 0.5){
-                    l2.y+=0.5
+                    l2.y+=0.01
                 }
             }
 

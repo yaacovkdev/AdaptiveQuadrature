@@ -1,7 +1,9 @@
 const mesh = new PIXI.Graphics();
-mesh.lineStyle(1, colors['white'], 0.25 );
 
 function setLines(divs){
+    mesh.clear();
+    mesh.lineStyle(1, colors['white'], 0.25 );
+
     var nx = parseInt(HEIGHT / divs);
     for (var i = 0; i < nx; i++){
         mesh.moveTo(0,divs*i);
@@ -15,4 +17,3 @@ function setLines(divs){
         mesh.lineTo(divs*i,HEIGHT);
     }
 }
-

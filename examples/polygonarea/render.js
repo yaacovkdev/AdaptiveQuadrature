@@ -1,4 +1,4 @@
-const WIDTH = 2000;
+const WIDTH = 1500;
 const HEIGHT = 1000;
 
 const ORIGINX = WIDTH/2;
@@ -15,9 +15,10 @@ let g = {
 
 let points = [];
 
-let pxdiv = 3;
+let pxdiv = 20;
 
-let text_area = null;
+let pxinputfield = document.getElementById('pxdivision');
+pxinputfield.value = pxdiv;
 
 function toCanvas(x,y){
     return [x+ORIGINX, ORIGINY-y];
@@ -28,14 +29,14 @@ function toAxis(x,y){
 }
 
 const app = new PIXI.Application({antialias: true,background: '0x000030', width: WIDTH, height: HEIGHT});
-document.body.appendChild(app.view);
+document.getElementById('canvasdiv').appendChild(app.view);
 
 const axis = new PIXI.Graphics();
 
 
 
 const lines = new PIXI.Graphics();
-const somethinggraph = new PIXI.Graphics();
+const approximatingsquares = new PIXI.Graphics();
 
 axis.lineStyle(2, colors['dark red'])
     .moveTo(ORIGINX,0)
@@ -71,8 +72,7 @@ const circle = app.stage.addChild(new PIXI.Graphics()
 function linesReset(){
     points = [];
     lines.clear();
-    somethinggraph.clear();
-    app.stage.removeChild(text_area);
+    approximatingsquares.clear();
 }
 
 function shapeReset(){
@@ -101,6 +101,17 @@ function findExactArea(){
 app.stage.eventMode = 'static';
 // Make sure the whole canvas area is interactive
 app.stage.hitArea = app.screen;
+
+//reset the stage when "Reset" button clicked
+document.getElementById('resetbutton').addEventListener('click', (e) => {
+    linesReset();
+    pxdiv = parseFloat(pxinputfield.value);
+    setLines(pxdiv);
+    clear_mode = 1;
+    //intro message gets displayed.
+    app.stage.removeChild(intro_message);
+    app.stage.addChild(intro_message);
+});
 
 // Follow the pointer
 app.stage.addEventListener('pointermove', (e) =>
@@ -135,8 +146,8 @@ app.stage.addEventListener('pointertap', (e) =>{
         clear_mode = 2;
 
         //debugging purposes
-        g.x  = new BigNumber(g.x).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
-        g.y  = new BigNumber(g.y).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
+        //g.x  = new BigNumber(g.x).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber()-pxdiv/2;
+        //g.y  = new BigNumber(g.y).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber()-pxdiv/2;
         points.push([g.x,g.y]);
         return;
     }
@@ -146,8 +157,8 @@ app.stage.addEventListener('pointertap', (e) =>{
     g.y = e.global.y;
 
     //debugging purposes
-    g.x  = new BigNumber(g.x).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
-    g.y  = new BigNumber(g.y).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
+    //g.x  = new BigNumber(g.x).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber()-pxdiv/2;
+    //g.y  = new BigNumber(g.y).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber()-pxdiv/2;
     
 
     if(distance([g.x,g.y],[points[0][0],points[0][1]]) <= 8){
@@ -160,27 +171,39 @@ app.stage.addEventListener('pointertap', (e) =>{
     
     //finds the exact area inside the polygon using shoelace algorithm
     if(clear_mode == 0){
-        var polyperim = getPerimeter(points);
         
         var mesh = getMeshGrid(points, pxdiv);
         var [k1,k2] = inpolygonSq(mesh, points,pxdiv);
 
 
         
-        somethinggraph.beginFill(colors['red'],0.5);
+        approximatingsquares.beginFill(colors['red'],0.5);
         for (var i = 0; i < k1.length; i++){
-            somethinggraph.drawRect(k1[i][0], k1[i][1], pxdiv,pxdiv);
+            if(pxdiv< 1 && (k1[i][0] - parseInt(k1[i][0]) != 0 || k1[i][1] - parseInt(k1[i][1]) != 0)){
+                continue;
+            }
+            approximatingsquares.drawRect(k1[i][0], k1[i][1], pxdiv,pxdiv);
+        }
+        for (var i = 0; i < k2.length; i++){
+            if(pxdiv< 1 && (k2[i][0] - parseInt(k2[i][0]) != 0 || k2[i][1] - parseInt(k2[i][1]) != 0)){
+                continue;
+            }
+            approximatingsquares.drawRect(k2[i][0], k2[i][1], pxdiv,pxdiv);
         }   
-        somethinggraph.endFill();
-        app.stage.addChild(somethinggraph);
+        approximatingsquares.endFill();
+        app.stage.addChild(approximatingsquares);
         var exact_area = new BigNumber(findExactArea()).dividedBy(pxdiv).dividedBy(pxdiv).toNumber();
-        text_area = new PIXI.Text(`Area is: ${exact_area.toFixed(3)} squares\nApprox MODIFIED Area is: ${((exact_area - k1.length)/(k2.length))} squares`, {
-            fontFamily: 'Arial',
-            fontSize: 24,
-            fill: colors['light purple'],
-            align: 'center',
-        });
-        text_area.position.set(WIDTH *1/10,HEIGHT * 9/10);
-        app.stage.addChild(text_area);
+
+        var approxarea = k1.length + k2.length;
+        var approxmodarea = k1.length + 0.5 * k2.length;
+        var ratiok = (exact_area - k1.length) / (k2.length);
+
+        var winner = Math.abs(approxarea - exact_area) > Math.abs(approxmodarea - exact_area) ? "Modified" : "Normal";
+        
+        document.getElementById('exactarea').innerText=`Exact Area: ${exact_area.toFixed(3)} squares`;
+        document.getElementById('approxarea').innerText=`Approx Area is: ${approxarea} squares`;
+        document.getElementById('approxmod').innerText=`Approx Modified Area is: ${approxmodarea} squares (k=0.5)`;
+        document.getElementById('calculatedk').innerText=`Ratio of k = ${ratiok}`;
+        document.getElementById('winner').innerText=`Winner: ${winner}`;
     }
 });
