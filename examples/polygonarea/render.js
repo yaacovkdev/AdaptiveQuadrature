@@ -15,7 +15,7 @@ let g = {
 
 let points = [];
 
-let pxdiv = 5;
+let pxdiv = 3;
 
 let text_area = null;
 
@@ -32,14 +32,10 @@ document.body.appendChild(app.view);
 
 const axis = new PIXI.Graphics();
 
-// Create the circle for tracking pointer
-const circle = app.stage.addChild(new PIXI.Graphics()
-    .beginFill(colors['light yellow'])
-    .lineStyle({ color: 0x111111, alpha: 0.87, width: 1 })
-    .drawCircle(0, 0, 8)
-    .endFill());
+
 
 const lines = new PIXI.Graphics();
+const somethinggraph = new PIXI.Graphics();
 
 axis.lineStyle(2, colors['dark red'])
     .moveTo(ORIGINX,0)
@@ -61,14 +57,21 @@ setLines(pxdiv);
 
 //Add the graphics components to the app.
 app.stage.addChild(mesh);
-//app.stage.addChild(axis);
 app.stage.addChild(lines);
 app.stage.addChild(intro_message);
+
+// Create the circle for tracking pointer
+const circle = app.stage.addChild(new PIXI.Graphics()
+    .beginFill(colors['light yellow'])
+    .lineStyle({ color: 0x111111, alpha: 0.87, width: 1 })
+    .drawCircle(0, 0, 8)
+    .endFill());
 
 //remove the graphic lines and remove the Area display.
 function linesReset(){
     points = [];
     lines.clear();
+    somethinggraph.clear();
     app.stage.removeChild(text_area);
 }
 
@@ -124,12 +127,16 @@ app.stage.addEventListener('pointertap', (e) =>{
         g.x = e.global.x;
         g.y = e.global.y;
         
-        circle.beginFill(colors['white'])
+        circle.beginFill(colors['dark blue'])
             .lineStyle({ color: colors['light blue'], alpha: 0.87, width: 1 })
             .drawCircle(0,0,8)
             .endFill();
         
         clear_mode = 2;
+
+        //debugging purposes
+        g.x  = new BigNumber(g.x).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
+        g.y  = new BigNumber(g.y).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
         points.push([g.x,g.y]);
         return;
     }
@@ -137,6 +144,10 @@ app.stage.addEventListener('pointertap', (e) =>{
     lines.moveTo(g.x, g.y);
     g.x = e.global.x;
     g.y = e.global.y;
+
+    //debugging purposes
+    g.x  = new BigNumber(g.x).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
+    g.y  = new BigNumber(g.y).dividedBy(pxdiv).integerValue().multipliedBy(pxdiv).toNumber();
     
 
     if(distance([g.x,g.y],[points[0][0],points[0][1]]) <= 8){
@@ -149,19 +160,21 @@ app.stage.addEventListener('pointertap', (e) =>{
     
     //finds the exact area inside the polygon using shoelace algorithm
     if(clear_mode == 0){
+        var polyperim = getPerimeter(points);
+        
         var mesh = getMeshGrid(points, pxdiv);
-        var k = inpolygonSq(mesh, points,pxdiv);
+        var [k1,k2] = inpolygonSq(mesh, points,pxdiv);
+
+
         
-        
-        const somethinggraph = new PIXI.Graphics();
         somethinggraph.beginFill(colors['red'],0.5);
-        for (var i = 0; i < k.length; i++){
-            somethinggraph.drawRect(k[i][0], k[i][1], pxdiv,pxdiv);
+        for (var i = 0; i < k1.length; i++){
+            somethinggraph.drawRect(k1[i][0], k1[i][1], pxdiv,pxdiv);
         }   
         somethinggraph.endFill();
         app.stage.addChild(somethinggraph);
-
-        text_area = new PIXI.Text(`Area is: ${(findExactArea()/pxdiv/pxdiv).toFixed(3)} squares`, {
+        var exact_area = new BigNumber(findExactArea()).dividedBy(pxdiv).dividedBy(pxdiv).toNumber();
+        text_area = new PIXI.Text(`Area is: ${exact_area.toFixed(3)} squares\nApprox MODIFIED Area is: ${((exact_area - k1.length)/(k2.length))} squares`, {
             fontFamily: 'Arial',
             fontSize: 24,
             fill: colors['light purple'],
